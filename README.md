@@ -1,8 +1,16 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+## Setup of Environment Variables
 
+`.env.*` files have been set to be ignored by Git. Therefore, new `.env` files will have to be created to set up the environment variables required for the project to run. Here are the steps to create and configure these files:
 
+1. Create a `.env.test` file in the root directory of the project with the following content:
+
+  PGDATABASE=<database_name>_test,
+
+2. Create a `.env.development` file in the root directory of the project with the following content:
+
+  PGDATABASE=<database_name>,
 
 --- 
 
