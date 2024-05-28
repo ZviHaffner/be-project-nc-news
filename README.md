@@ -6,11 +6,11 @@
 
 1. Create a `.env.test` file in the root directory of the project with the following content:
 
-  PGDATABASE=<database_name>_test,
+  PGDATABASE=<database_name>_test
 
 2. Create a `.env.development` file in the root directory of the project with the following content:
 
-  PGDATABASE=<database_name>,
+  PGDATABASE=<database_name>
 
 --- 
 
