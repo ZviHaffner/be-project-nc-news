@@ -23,6 +23,25 @@ describe("/api/notARoute", () => {
   });
 });
 
+describe("/api", () => {
+  test("GET 200: Responds with all endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const allEndpoints = body.endpoints
+        for(key in allEndpoints) {
+          expect(allEndpoints[key]).toMatchObject({
+            "description": expect.any(String),
+            "queries": expect.any(Array),
+            "reqBodyFormat": expect.any(Object),
+            "exampleResponse": expect.any(Object)
+          })
+        }
+      });
+  });
+});
+
 describe("/api/topics", () => {
   test("GET 200: Responds with all topics", () => {
     return request(app)
