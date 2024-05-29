@@ -195,4 +195,62 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.msg).toEqual("Bad Request");
       });
   });
+  test("POST 201: Adds the comment to the correct article and responds with the posted comment", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Hello World! This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toEqual({
+          comment_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          author: "butter_bridge",
+          body: "Hello World! This is a test comment.",
+          article_id: 2,
+        });
+      });
+  });
+  test("POST 400: Responds with error when a bad object is posted e.g. a malformed body / missing required fields", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+  test("POST 404: Responds with error when passed a non-existent ID", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Hello World! This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/99999999/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not Found");
+      });
+  });
+  test("POST 400: Responds with error when passed an ID that is not a number", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Hello World! This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/NaN/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
 });
