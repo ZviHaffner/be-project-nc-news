@@ -55,7 +55,61 @@ describe("/api/topics", () => {
             slug: expect.any(String),
           });
         });
-      }); 
+      });
+  });
+});
+
+describe("/api/articles", () => {
+  test("GET 200: Responds with all articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles.length).toBe(13);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET 200: Adds comment_count to articles response", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+  test("GET 200: Response is sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("GET 200: Does not include body column in response", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
+          expect(article).not.toHaveProperty('body');
+        });
+      });
   });
 });
 
@@ -83,7 +137,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/99999999")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toEqual('No article found for article_id: 99999999');
+        expect(body.msg).toEqual("No article found for article_id: 99999999");
       });
   });
   test("GET 400: Responds with error when passed an ID that is not a number", () => {
@@ -91,7 +145,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/NaN")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toEqual('Bad Request');
+        expect(body.msg).toEqual("Bad Request");
       });
   });
 });
