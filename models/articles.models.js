@@ -31,3 +31,25 @@ exports.fetchArticleById = (articleId) => {
       return article;
     });
 };
+
+exports.fetchCommentsByArticle = (articleId) => {
+  return db
+    .query(
+      `
+    SELECT * FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC;
+  `,
+      [articleId]
+    )
+    .then(({ rows }) => {
+      const comments = rows;
+      if (!comments.length) {
+        return Promise.reject({
+          status: 404,
+          msg: `No comments found for article_id: ${articleId}`,
+        });
+      }
+      return comments;
+    });
+};

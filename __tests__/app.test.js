@@ -107,7 +107,7 @@ describe("/api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         body.articles.forEach((article) => {
-          expect(article).not.toHaveProperty('body');
+          expect(article).not.toHaveProperty("body");
         });
       });
   });
@@ -143,6 +143,53 @@ describe("/api/articles/:article_id", () => {
   test("GET 400: Responds with error when passed an ID that is not a number", () => {
     return request(app)
       .get("/api/articles/NaN")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200: Responds with comments for correct article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments.length).toBe(11);
+        body.comments.forEach(comment => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        })
+      });
+  });
+  test("GET 200: Response is sorted with the most recent comments first", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+  test("GET 404: Responds with error when passed a non-existent ID", () => {
+    return request(app)
+      .get("/api/articles/99999999/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No comments found for article_id: 99999999");
+      });
+  });
+  test("GET 400: Responds with error when passed an ID that is not a number", () => {
+    return request(app)
+      .get("/api/articles/NaN/comments")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad Request");
