@@ -63,5 +63,23 @@
         "created_at": "2020-01-01T03:08:00.000Z"
       }
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Adds a comment for an article specified by ID number. Serves up a json representation of the comment.",
+    "queries": [],
+    "reqBodyFormat": {
+      "username": "icellusedkars",
+      "body": "Superficially charming"
+    },
+    "exampleResponse": {
+      "comments": {
+        "comment_id": 9,
+        "body": "Superficially charming",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2020-01-01T03:08:00.000Z"
+      }
+    }
   }
 }
