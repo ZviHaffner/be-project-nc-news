@@ -63,3 +63,26 @@ exports.insertCommentByArticle = (newComment, articleId) => {
     )
     .then(({ rows }) => rows[0]);
 };
+
+exports.updateVotesByArticle = (newVotes, articleId) => {
+  return db
+    .query(
+      `
+  UPDATE articles
+  SET
+    votes = votes + $1
+  WHERE article_id = $2
+  RETURNING *;`,
+      [newVotes, articleId]
+    )
+    .then(({ rows }) => {
+      const updatedArticle = rows;
+      if (!updatedArticle.length) {
+        return Promise.reject({
+          status: 404,
+          msg: `No article found for article_id: ${articleId}`,
+        });
+      }
+      return updatedArticle[0];
+    });
+};

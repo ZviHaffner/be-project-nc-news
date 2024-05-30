@@ -148,6 +148,76 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toEqual("Bad Request");
       });
   });
+  test("PATCH 201: Responds with updated votes added for correct article", () => {
+    const newVotes = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedArticle).toEqual({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: 25,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 201: Responds with updated votes subtracted for correct article", () => {
+    const newVotes = { inc_votes: -25 };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedArticle).toEqual({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          body: "some gifs",
+          created_at: "2020-11-03T09:12:00.000Z",
+          votes: -25,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH 400: Responds with error when a bad object is posted e.g. a malformed body / missing required fields", () => {
+    const newVotes = { inc_votes: "Twenty five" };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+  test("PATCH 404: Responds with error when passed a non-existent ID", () => {
+    const newVotes = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/articles/99999999")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No article found for article_id: 99999999");
+      });
+  });
+  test("PATCH 400: Responds with error when passed an ID that is not a number", () => {
+    const newVotes = { inc_votes: -25 };
+    return request(app)
+      .patch("/api/articles/NaN")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -157,7 +227,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.comments.length).toBe(11);
-        body.comments.forEach(comment => {
+        body.comments.forEach((comment) => {
           expect(comment).toEqual({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
@@ -166,7 +236,7 @@ describe("/api/articles/:article_id/comments", () => {
             body: expect.any(String),
             article_id: 1,
           });
-        })
+        });
       });
   });
   test("GET 200: Response is sorted with the most recent comments first", () => {
