@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = (filterBy) => {
+async function fetchAllArticles (filterBy) {
   let queryString = `
   SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments) AS comment_count
   FROM articles
@@ -8,14 +8,16 @@ exports.fetchAllArticles = (filterBy) => {
   ON articles.article_id = comments.article_id`;
 
   if (filterBy) {
-    const validFilterQueries = ["mitch", "cats", "paper"];
-    if (!validFilterQueries.includes(filterBy)) {
-      return Promise.reject({
-        status: 400,
-        msg: "Invalid filter query",
-      });
-    }
-    queryString += ` WHERE topic = '${filterBy}'`;
+    const allTopics = await db.query('SELECT slug FROM topics')
+      const validFilterQueries = [];
+      allTopics.rows.forEach(topic => validFilterQueries.push(topic.slug))
+      if (!validFilterQueries.includes(filterBy)) {
+        return Promise.reject({
+          status: 400,
+          msg: "Invalid filter query",
+        });
+      }
+      queryString += ` WHERE topic = '${filterBy}'`;
   }
 
   queryString += " GROUP BY articles.article_id ORDER BY created_at DESC";
@@ -25,7 +27,7 @@ exports.fetchAllArticles = (filterBy) => {
   });
 };
 
-exports.fetchArticleById = (articleId) => {
+const fetchArticleById = (articleId) => {
   return db
     .query(
       `
@@ -46,7 +48,7 @@ exports.fetchArticleById = (articleId) => {
     });
 };
 
-exports.fetchCommentsByArticle = (articleId) => {
+const fetchCommentsByArticle = (articleId) => {
   return db
     .query(
       `
@@ -68,7 +70,7 @@ exports.fetchCommentsByArticle = (articleId) => {
     });
 };
 
-exports.insertCommentByArticle = (newComment, articleId) => {
+const insertCommentByArticle = (newComment, articleId) => {
   const { username, body } = newComment;
   return db
     .query(
@@ -78,7 +80,7 @@ exports.insertCommentByArticle = (newComment, articleId) => {
     .then(({ rows }) => rows[0]);
 };
 
-exports.updateVotesByArticle = (newVotes, articleId) => {
+const updateVotesByArticle = (newVotes, articleId) => {
   return db
     .query(
       `
@@ -100,3 +102,5 @@ exports.updateVotesByArticle = (newVotes, articleId) => {
       return updatedArticle[0];
     });
 };
+
+module.exports = { fetchAllArticles, fetchArticleById, fetchCommentsByArticle, insertCommentByArticle, updateVotesByArticle }
