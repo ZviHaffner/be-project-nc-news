@@ -14,25 +14,44 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "description": "serves an array of all articles with a count of comments for each. Sorted by date in descending order.",
+    "queries": [
+      {
+        "filter_by": ["mitch", "cats", "paper"]
+      }
+    ],
     "reqBodyFormat": {},
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": "2018-05-30T15:59:13.341Z",
+          "author": "icellusedkars",
+          "title": "Z",
+          "article_id": 7,
+          "topic": "mitch",
+          "created_at": "2020-01-07T14:08:00.000Z",
           "votes": 0,
-          "comment_count": 6
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": "0"
+        }
+      ]
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {
+      "articles": [
+        {
+          "username": "happyamy2016",
+          "name": "Amy Happy",
+          "avatar_url": "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
         }
       ]
     }
   },
   "GET /api/articles/:article_id": {
-    "description": "serves up a json representation of an article specified by ID number",
+    "description": "Serves up a json representation of an article specified by ID number. Adds a comment count.",
     "queries": [],
     "reqBodyFormat": {},
     "exampleResponse": {
@@ -44,8 +63,65 @@
         "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
         "created_at": "2020-11-07T06:03:00.000Z",
         "votes": 0,
-        "article_img_url": "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700"
+        "article_img_url": "https://images.pexels.com/photos/11035380/pexels-photo-11035380.jpeg?w=700&h=700",
+        "comment_count": "11"
       }
     }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "Serves up a json representation of all comments for an article specified by ID number. Sorted by date with the most recent comments first.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {
+      "comments": {
+        "comment_id": 9,
+        "body": "Superficially charming",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2020-01-01T03:08:00.000Z"
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Adds a comment for an article specified by ID number. Serves up a json representation of the comment.",
+    "queries": [],
+    "reqBodyFormat": {
+      "username": "icellusedkars",
+      "body": "Superficially charming"
+    },
+    "exampleResponse": {
+      "comments": {
+        "comment_id": 9,
+        "body": "Superficially charming",
+        "article_id": 1,
+        "author": "icellusedkars",
+        "votes": 0,
+        "created_at": "2020-01-01T03:08:00.000Z"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id/": {
+    "description": "Adds / subtracts votes of an article specified by ID number. Serves up a json representation of the updates article.",
+    "queries": [],
+    "reqBodyFormat": { "inc_votes": 25 },
+    "exampleResponse": {
+      "updatedArticle": {
+        "article_id": 3,
+        "title": "Eight pug gifs that remind me of mitch",
+        "topic": "mitch",
+        "author": "icellusedkars",
+        "body": "some gifs",
+        "created_at": "2020-11-03T09:12:00.000Z",
+        "votes": 25,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  },
+  "DELETE /api/articles/:article_id/": {
+    "description": "Deletes comment specified by ID number. Does not serve up any content.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {}
   }
 }
