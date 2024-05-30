@@ -11,6 +11,7 @@ const {
   addCommentByArticle,
   updateArticleById,
 } = require("./controllers/articles.controllers");
+const { eraseCommentById } = require("./controllers/comments.controllers");
 
 app.use(express.json());
 
@@ -28,6 +29,8 @@ app.post("/api/articles/:article_id/comments", addCommentByArticle);
 
 app.patch("/api/articles/:article_id", updateArticleById);
 
+app.delete("/api/comments/:comment_id", eraseCommentById);
+
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
     res.status(err.status).send({ msg: err.msg });
@@ -42,7 +45,7 @@ app.use((err, req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err.code === "23503") {
-    res.status(404).send({ msg: 'Not Found' });
+    res.status(404).send({ msg: "Not Found" });
   } else next(err);
 });
 
