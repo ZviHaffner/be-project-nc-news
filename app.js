@@ -12,6 +12,7 @@ const {
   updateArticleById,
 } = require("./controllers/articles.controllers");
 const { eraseCommentById } = require("./controllers/comments.controllers");
+const { getAllUsers } = require("./controllers/users.controllers");
 
 app.use(express.json());
 
@@ -20,6 +21,8 @@ app.get("/api", getAllEndpoints);
 app.get("/api/topics", getAllTopics);
 
 app.get("/api/articles", getAllArticles);
+
+app.get("/api/users", getAllUsers);
 
 app.get("/api/articles/:article_id", getArticleById);
 

@@ -32,6 +32,20 @@
       ]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all users.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {
+      "articles": [
+        {
+          "username": "happyamy2016",
+          "name": "Amy Happy",
+          "avatar_url": "https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves up a json representation of an article specified by ID number",
     "queries": [],
