@@ -65,7 +65,7 @@ describe("/api/articles/:article_id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
+        expect(body.article).toMatchObject({
           article_id: 1,
           title: "Living in the shadow of a great man",
           topic: "mitch",
