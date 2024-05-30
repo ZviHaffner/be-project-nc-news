@@ -215,6 +215,19 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
+  test("POST 404: Responds with error when a non existent username is posted", () => {
+    const newComment = {
+      username: "fake_username",
+      body: "Hello World! This is a test comment.",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not Found");
+      });
+  });
   test("POST 400: Responds with error when a bad object is posted e.g. a malformed body / missing required fields", () => {
     const newComment = {
       username: "butter_bridge",
