@@ -324,3 +324,27 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 });
+
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204: Deletes comment specified by ID", () => {
+    return request(app)
+      .delete("/api/comments/10")
+      .expect(204)
+  });
+  test("DELETE 404: Responds with error when passed a non-existent ID", () => {
+    return request(app)
+      .delete("/api/comments/99999999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No comment found for comment_id: 99999999");
+      });
+  });
+  test("DELETE 400: Responds with error when passed an ID that is not a number", () => {
+    return request(app)
+      .delete("/api/comments/NaN")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+});
