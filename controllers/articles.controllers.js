@@ -7,10 +7,13 @@ const {
   updateVotesByArticle,
 } = require("../models/articles.models");
 
-exports.getAllArticles = (req, res) => {
-  fetchAllArticles().then((result) => {
-    res.status(200).send({ articles: result.rows });
-  });
+exports.getAllArticles = (req, res, next) => {
+  const { filter_by } = req.query;
+  fetchAllArticles(filter_by)
+    .then((result) => {
+      res.status(200).send({ articles: result });
+    })
+    .catch(next);
 };
 
 exports.getArticleById = (req, res, next) => {

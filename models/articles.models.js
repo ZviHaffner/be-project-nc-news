@@ -1,14 +1,28 @@
 const db = require("../db/connection");
 
-exports.fetchAllArticles = () => {
-  return db.query(`
+exports.fetchAllArticles = (filterBy) => {
+  let queryString = `
   SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments) AS comment_count
   FROM articles
   LEFT JOIN comments
-  ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY created_at DESC
-  `);
+  ON articles.article_id = comments.article_id`;
+
+  if (filterBy) {
+    const validFilterQueries = ["mitch", "cats", "paper"];
+    if (!validFilterQueries.includes(filterBy)) {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid filter query",
+      });
+    }
+    queryString += ` WHERE topic = '${filterBy}'`;
+  }
+
+  queryString += " GROUP BY articles.article_id ORDER BY created_at DESC";
+
+  return db.query(queryString).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchArticleById = (articleId) => {
