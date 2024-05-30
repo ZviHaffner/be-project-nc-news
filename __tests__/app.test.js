@@ -23,21 +23,37 @@ describe("/api/notARoute", () => {
   });
 });
 
-describe("/api", () => {
-  test("GET 200: Responds with all endpoints", () => {
+describe("/api/users", () => {
+  test("GET 200: Responds with all users", () => {
     return request(app)
-      .get("/api")
+      .get("/api/users")
       .expect(200)
       .then(({ body }) => {
-        const allEndpoints = body.endpoints;
-        for (key in allEndpoints) {
-          expect(allEndpoints[key]).toMatchObject({
-            description: expect.any(String),
-            queries: expect.any(Array),
-            reqBodyFormat: expect.any(Object),
-            exampleResponse: expect.any(Object),
+        const allUsers = body.users;
+        for (key in allUsers) {
+          expect(allUsers[key]).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
           });
         }
+      });
+  });
+});
+
+describe("/api/topics", () => {
+  test("GET 200: Responds with all topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.topics.length).toBe(3);
+        body.topics.forEach((topic) => {
+          expect(topic).toMatchObject({
+            description: expect.any(String),
+            slug: expect.any(String),
+          });
+        });
       });
   });
 });
@@ -327,9 +343,7 @@ describe("/api/articles/:article_id/comments", () => {
 
 describe("/api/comments/:comment_id", () => {
   test("DELETE 204: Deletes comment specified by ID", () => {
-    return request(app)
-      .delete("/api/comments/10")
-      .expect(204)
+    return request(app).delete("/api/comments/10").expect(204);
   });
   test("DELETE 404: Responds with error when passed a non-existent ID", () => {
     return request(app)
