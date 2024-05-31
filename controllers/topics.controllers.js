@@ -1,12 +1,4 @@
-const {
-  fetchAllEndpoints,
-  fetchAllTopics,
-} = require("../models/topics.models");
-
-exports.getAllEndpoints = (req, res) => {
-  const allEndpoints = fetchAllEndpoints();
-  res.status(200).send({ endpoints: allEndpoints });
-};
+const { fetchAllTopics } = require("../models/topics.models");
 
 exports.getAllTopics = (req, res) => {
   fetchAllTopics().then(({ rows }) => {
