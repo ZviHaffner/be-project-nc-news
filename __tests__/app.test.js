@@ -49,6 +49,7 @@ describe("/api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const allUsers = body.users;
+        expect(allUsers.length).toBe(4);
         for (key in allUsers) {
           expect(allUsers[key]).toMatchObject({
             username: expect.any(String),
