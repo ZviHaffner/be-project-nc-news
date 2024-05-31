@@ -1,38 +1,11 @@
 const express = require("express");
 const app = express();
-const {
-  getAllEndpoints,
-  getAllTopics,
-} = require("./controllers/topics.controllers");
-const {
-  getAllArticles,
-  getArticleById,
-  getCommentsByArticle,
-  addCommentByArticle,
-  updateArticleById,
-} = require("./controllers/articles.controllers");
-const { eraseCommentById } = require("./controllers/comments.controllers");
-const { getAllUsers } = require("./controllers/users.controllers");
+
+const apiRouter = require("./routers/api-router");
 
 app.use(express.json());
 
-app.get("/api", getAllEndpoints);
-
-app.get("/api/topics", getAllTopics);
-
-app.get("/api/articles", getAllArticles);
-
-app.get("/api/users", getAllUsers);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticle);
-
-app.post("/api/articles/:article_id/comments", addCommentByArticle);
-
-app.patch("/api/articles/:article_id", updateArticleById);
-
-app.delete("/api/comments/:comment_id", eraseCommentById);
+app.use("/api", apiRouter);
 
 app.use((err, req, res, next) => {
   if (err.status && err.msg) {
