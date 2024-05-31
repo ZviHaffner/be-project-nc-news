@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-async function fetchAllArticles (filterBy) {
+async function fetchAllArticles(sortBy = "created_at", order = "DESC", filterBy) {
   let queryString = `
   SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments) AS comment_count
   FROM articles
@@ -8,24 +8,45 @@ async function fetchAllArticles (filterBy) {
   ON articles.article_id = comments.article_id`;
 
   if (filterBy) {
-    const allTopics = await db.query('SELECT slug FROM topics')
-      const validFilterQueries = [];
-      allTopics.rows.forEach(topic => validFilterQueries.push(topic.slug))
-      if (!validFilterQueries.includes(filterBy)) {
-        return Promise.reject({
-          status: 400,
-          msg: "Invalid filter query",
-        });
-      }
-      queryString += ` WHERE topic = '${filterBy}'`;
+    const validFilterQueries = [];
+    const allTopics = await db.query("SELECT slug FROM topics");
+    allTopics.rows.forEach((topic) => validFilterQueries.push(topic.slug));
+    if (!validFilterQueries.includes(filterBy)) {
+      return Promise.reject({
+        status: 400,
+        msg: "Invalid Filter Query",
+      });
+    }
+    queryString += ` WHERE topic = '${filterBy}'`;
   }
 
-  queryString += " GROUP BY articles.article_id ORDER BY created_at DESC";
+  const validSortQueries = [];
+  const allColumns = await db.query(`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_name = 'articles';
+  `);
+  allColumns.rows.forEach((column) => validSortQueries.push(column.column_name));
+  if (!validSortQueries.includes(sortBy)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Sort Query",
+    });
+  }
+
+  const validOrderQueries = ['asc', 'desc', 'ASC', 'DESC'];
+  if (!validOrderQueries.includes(order)) {
+    return Promise.reject({
+      status: 400,
+      msg: "Invalid Order Query",
+    });
+  }
+  queryString += ` GROUP BY articles.article_id ORDER BY ${sortBy} ${order}`;
 
   return db.query(queryString).then(({ rows }) => {
     return rows;
   });
-};
+}
 
 const fetchArticleById = (articleId) => {
   return db
@@ -105,4 +126,10 @@ const updateVotesByArticle = (newVotes, articleId) => {
     });
 };
 
-module.exports = { fetchAllArticles, fetchArticleById, fetchCommentsByArticle, insertCommentByArticle, updateVotesByArticle }
+module.exports = {
+  fetchAllArticles,
+  fetchArticleById,
+  fetchCommentsByArticle,
+  insertCommentByArticle,
+  updateVotesByArticle,
+};

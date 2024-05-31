@@ -110,7 +110,17 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 200: Response is sorted by date in descending order", () => {
+  test("GET 200: Does not include body column in response", () => {
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({ body }) => {
+      body.articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("GET 200: Response is by default sorted by date in descending order", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
@@ -120,14 +130,22 @@ describe("/api/articles", () => {
         });
       });
   });
-  test("GET 200: Does not include body column in response", () => {
+  test("GET 200: accepts optional query to sort by a column", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/articles?sort_by=title")
       .expect(200)
       .then(({ body }) => {
-        body.articles.forEach((article) => {
-          expect(article).not.toHaveProperty("body");
+        expect(body.articles).toBeSortedBy("title", {
+          descending: true,
         });
+      });
+  });
+  test("GET 400: Responds with error when passed a non valid sort query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=sqlInjection")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid Sort Query");
       });
   });
   test("GET 200: Accepts optional query to filter by topic", () => {
@@ -148,13 +166,49 @@ describe("/api/articles", () => {
           });
         });
       });
-  });
+    });
   test("GET 400: Responds with error when passed a non valid filter query", () => {
     return request(app)
       .get("/api/articles?filter_by=sqlInjection")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toEqual("Invalid filter query");
+        expect(body.msg).toEqual("Invalid Filter Query");
+      });
+  });
+  test("GET 200: accepts optional query to order by ASC", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("created_at");
+      });
+  });
+  test("GET 400: Responds with error when passed a non valid order query", () => {
+    return request(app)
+      .get("/api/articles?order=sqlInjection")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid Order Query");
+      });
+  });
+  test("GET 200: accepts optional queries to filter, sort and order", () => {
+    return request(app)
+      .get("/api/articles?filter_by=mitch&sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSortedBy("author");
+        expect(body.articles.length).toBe(12);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: "mitch",
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          });
+        });
       });
   });
 });
