@@ -15,11 +15,7 @@
   },
   "GET /api/articles": {
     "description": "serves an array of all articles with a count of comments for each. Sorted by date in descending order.",
-    "queries": [
-      {
-        "filter_by": ["mitch", "cats", "paper"]
-      }
-    ],
+    "queries": ["topic"],
     "reqBodyFormat": {},
     "exampleResponse": {
       "articles": [
