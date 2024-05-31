@@ -198,6 +198,16 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toEqual("Bad Request");
       });
   });
+  test("PATCH 400: Responds with error when an empty object is posted", () => {
+    const newVotes = {};
+    return request(app)
+      .patch("/api/articles/3")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
   test("PATCH 404: Responds with error when passed a non-existent ID", () => {
     const newVotes = { inc_votes: 25 };
     return request(app)
