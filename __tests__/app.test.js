@@ -61,6 +61,31 @@ describe("/api/users", () => {
   });
 });
 
+describe("/api/users/:username", () => {
+  test("GET 200: Responds with specified user", () => {
+    return request(app)
+      .get("/api/users/rogersop")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user
+        expect(user).toEqual({
+          username: "rogersop",
+          name: "paul",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+        });
+      });
+  });
+  test("GET 404: Responds with error when passed a non-existent username", () => {
+    return request(app)
+      .get("/api/users/notaname")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No user found for username: notaname");
+      });
+  });
+});
+
 describe("/api/topics", () => {
   test("GET 200: Responds with all topics", () => {
     return request(app)
@@ -112,10 +137,10 @@ describe("/api/articles", () => {
   });
   test("GET 200: Does not include body column in response", () => {
     return request(app)
-    .get("/api/articles")
-    .expect(200)
-    .then(({ body }) => {
-      body.articles.forEach((article) => {
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        body.articles.forEach((article) => {
           expect(article).not.toHaveProperty("body");
         });
       });
@@ -166,7 +191,7 @@ describe("/api/articles", () => {
           });
         });
       });
-    });
+  });
   test("GET 400: Responds with error when passed a non valid filter query", () => {
     return request(app)
       .get("/api/articles?filter_by=sqlInjection")
