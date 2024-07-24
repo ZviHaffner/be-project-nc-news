@@ -46,6 +46,18 @@
       ]
     }
   },
+  "GET /api/users/:username": {
+    "description": "Serves up a json representation of an user specified by username.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {
+      "user": {
+        "username": "rogersop",
+        "name": "paul",
+        "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+      }
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "Serves up a json representation of an article specified by ID number. Adds a comment count.",
     "queries": [],
