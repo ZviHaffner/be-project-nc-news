@@ -67,7 +67,7 @@ describe("/api/users/:username", () => {
       .get("/api/users/rogersop")
       .expect(200)
       .then(({ body }) => {
-        const user = body.user
+        const user = body.user;
         expect(user).toEqual({
           username: "rogersop",
           name: "paul",
@@ -507,6 +507,83 @@ describe("/api/comments/:comment_id", () => {
   test("DELETE 400: Responds with error when passed an ID that is not a number", () => {
     return request(app)
       .delete("/api/comments/NaN")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  test("PATCH 201: Responds with updated votes added for correct comment", () => {
+    const newVotes = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment).toEqual({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 41,
+          author: "butter_bridge",
+          article_id: 9,
+          comment_id: 1,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("PATCH 200: Responds with updated votes subtracted for correct comment", () => {
+    const newVotes = { inc_votes: -10 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.updatedComment).toEqual({
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 6,
+          author: "butter_bridge",
+          article_id: 9,
+          comment_id: 1,
+          created_at: "2020-04-06T12:17:00.000Z",
+        });
+      });
+  });
+  test("PATCH 400: Responds with error when a bad object is posted e.g. a malformed body / missing required fields", () => {
+    const newVotes = { inc_votes: "Twenty five" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+  test("PATCH 400: Responds with error when an empty object is posted", () => {
+    const newVotes = {};
+    return request(app)
+      .patch("/api/comments/1")
+      .send(newVotes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+  test("PATCH 404: Responds with error when passed a non-existent ID", () => {
+    const newVotes = { inc_votes: 25 };
+    return request(app)
+      .patch("/api/comments/9999999")
+      .send(newVotes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No comment found for comment_id: 9999999");
+      });
+  });
+  test("PATCH 400: Responds with error when passed an ID that is not a number", () => {
+    const newVotes = { inc_votes: -25 };
+    return request(app)
+      .patch("/api/comments/NaN")
+      .send(newVotes)
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toEqual("Bad Request");

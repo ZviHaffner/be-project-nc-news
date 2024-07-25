@@ -20,3 +20,26 @@ exports.deleteCommentByID = (commentId) => {
       return result;
     });
 };
+
+exports.updateCommentVotesById = (newVotes, commentId) => {
+  return db
+    .query(
+      `
+      UPDATE comments
+      SET
+        votes = votes + $1
+      WHERE comment_id = $2
+      RETURNING *;`,
+      [newVotes, commentId]
+    )
+    .then(({ rows }) => {
+      const updatedComment = rows;
+      if (!updatedComment.length) {
+        return Promise.reject({
+          status: 404,
+          msg: `No comment found for comment_id: ${commentId}`,
+        });
+      }
+      return updatedComment[0];
+    });
+};
