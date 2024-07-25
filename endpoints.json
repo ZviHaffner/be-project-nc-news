@@ -131,5 +131,20 @@
     "queries": [],
     "reqBodyFormat": {},
     "exampleResponse": {}
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Adds / subtracts votes of an comment specified by ID number. Serves up a json representation of the updated comment.",
+    "queries": [],
+    "reqBodyFormat": { "inc_votes": 25 },
+    "exampleResponse": {
+      "updatedComment": {
+        "body": "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        "votes": 41,
+        "author": "butter_bridge",
+        "article_id": 9,
+        "comment_id": 1,
+        "created_at": "2020-04-06T12:17:00.000Z"
+      }
+    }
   }
 }
