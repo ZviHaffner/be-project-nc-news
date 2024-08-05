@@ -1,6 +1,10 @@
 const db = require("../db/connection");
 
-async function fetchAllArticles(sortBy = "created_at", order = "DESC", filterBy) {
+async function fetchAllArticles(
+  sortBy = "created_at",
+  order = "DESC",
+  filterBy
+) {
   let queryString = `
   SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(comments) AS comment_count
   FROM articles
@@ -26,7 +30,9 @@ async function fetchAllArticles(sortBy = "created_at", order = "DESC", filterBy)
     FROM information_schema.columns
     WHERE table_name = 'articles';
   `);
-  allColumns.rows.forEach((column) => validSortQueries.push(column.column_name));
+  allColumns.rows.forEach((column) =>
+    validSortQueries.push(column.column_name)
+  );
   if (!validSortQueries.includes(sortBy)) {
     return Promise.reject({
       status: 400,
@@ -34,7 +40,7 @@ async function fetchAllArticles(sortBy = "created_at", order = "DESC", filterBy)
     });
   }
 
-  const validOrderQueries = ['asc', 'desc', 'ASC', 'DESC'];
+  const validOrderQueries = ["asc", "desc", "ASC", "DESC"];
   if (!validOrderQueries.includes(order)) {
     return Promise.reject({
       status: 400,
@@ -126,10 +132,30 @@ const updateVotesByArticle = (newVotes, articleId) => {
     });
 };
 
+const insertArticle = (newArticle) => {
+  const { author, title, body, topic, article_img_url } = newArticle;
+  if (article_img_url) {
+    return db
+      .query(
+        "INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
+        [author, title, body, topic, article_img_url]
+      )
+      .then(({ rows }) => rows[0]);
+  } else {
+    return db
+      .query(
+        "INSERT INTO articles (author, title, body, topic) VALUES ($1, $2, $3, $4) RETURNING *;",
+        [author, title, body, topic]
+      )
+      .then(({ rows }) => rows[0]);
+  }
+};
+
 module.exports = {
   fetchAllArticles,
   fetchArticleById,
   fetchCommentsByArticle,
   insertCommentByArticle,
   updateVotesByArticle,
+  insertArticle,
 };

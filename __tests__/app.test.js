@@ -238,6 +238,107 @@ describe("/api/articles", () => {
   });
 });
 
+describe("/api/articles", () => {
+  test("POST 201: Adds the article and responds with the posted article", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "New Article",
+      body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+      topic: "mitch",
+      article_img_url:
+        "https://www.thoughtco.com/thmb/Us-4-juC71kAdEiDiPa4FMj2bzI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-539884551-57faea2f5f9b586c357f6424.jpg",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          author: "icellusedkars",
+          title: "New Article",
+          body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+          topic: "mitch",
+          article_img_url:
+            "https://www.thoughtco.com/thmb/Us-4-juC71kAdEiDiPa4FMj2bzI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-539884551-57faea2f5f9b586c357f6424.jpg",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("POST 201: Adds the article and responds with the posted article with the default article_img_url", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "New Article",
+      body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          author: "icellusedkars",
+          title: "New Article",
+          body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+          topic: "mitch",
+          article_img_url:
+            "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          article_id: expect.any(Number),
+          votes: 0,
+          created_at: expect.any(String),
+          comment_count: 0,
+        });
+      });
+  });
+  test("POST 404: Responds with error when a non existent username is posted", () => {
+    const newArticle = {
+      author: "fake_username",
+      title: "New Article",
+      body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not Found");
+      });
+  });
+  test("POST 404: Responds with error when a non existent topic is posted", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      title: "New Article",
+      body: "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+      topic: "fake_topic",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Not Found");
+      });
+  });
+  test("POST 400: Responds with error when a bad object is posted e.g. a malformed body / missing required fields", () => {
+    const newArticle = {
+      author: "icellusedkars",
+      topic: "mitch",
+      body: null
+    };
+    return request(app)
+      .post("/api/articles/")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad Request");
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET 200: Responds with correct article", () => {
     return request(app)

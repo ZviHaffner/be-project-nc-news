@@ -32,6 +32,26 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "Posts a new article. Serves up a json representation of the article.",
+    "queries": [],
+    "reqBodyFormat": {},
+    "exampleResponse": {
+      "articles": [
+        {
+          "author": "icellusedkars",
+          "title": "New Article",
+          "body": "Hi! This is a brand new article that I have just added to the website. I am very excited to share it with you!",
+          "topic": "mitch",
+          "article_img_url": "https://www.thoughtco.com/thmb/Us-4-juC71kAdEiDiPa4FMj2bzI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-539884551-57faea2f5f9b586c357f6424.jpg",
+          "article_id": 13,
+          "votes": 0,
+          "created_at": "2020-01-07T14:08:00.000Z",
+          "comment_count": 0
+        }
+      ]
+    }
+  },
   "GET /api/users": {
     "description": "serves an array of all users.",
     "queries": [],

@@ -5,6 +5,7 @@ const {
   fetchCommentsByArticle,
   insertCommentByArticle,
   updateVotesByArticle,
+  insertArticle,
 } = require("../models/articles.models");
 
 exports.getAllArticles = (req, res, next) => {
@@ -51,6 +52,15 @@ exports.updateArticleById = (req, res, next) => {
   updateVotesByArticle(inc_votes, article_id)
     .then((updatedArticle) => {
       res.status(200).send({ updatedArticle });
+    })
+    .catch(next);
+};
+
+exports.addArticle = (req, res, next) => {
+  const newArticle = req.body;
+  insertArticle(newArticle)
+    .then((article) => {
+      res.status(201).send({ article: { ...article, comment_count: 0 } });
     })
     .catch(next);
 };
