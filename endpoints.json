@@ -57,7 +57,7 @@
     "queries": [],
     "reqBodyFormat": {},
     "exampleResponse": {
-      "articles": [
+      "users": [
         {
           "username": "happyamy2016",
           "name": "Amy Happy",
